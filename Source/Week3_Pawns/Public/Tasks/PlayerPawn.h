@@ -26,14 +26,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION()
-	void PlayerMoveTypeOne(float Value);
-
-	UFUNCTION()
-	void PlayerMoveTypeTwo(float Value);
-
 private:
-	// The speed of the pawn
-	UPROPERTY(EditAnywhere)
-	float Speed = 600.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true")) // Private specifier added as we can't make something Blueprint Read/Writeable in the Private section by default. 
+		float MovementSpeed = 600.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true")) // Private specifier added as we can't make something Blueprint Read/Writeable in the Private section by default. 
+		bool bUseMovementTypeOne = true;
+
+	void PlayerMoveTypeOne();
+	void PlayerMoveTypeTwo();
 };

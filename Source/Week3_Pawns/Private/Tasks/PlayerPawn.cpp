@@ -23,23 +23,38 @@ void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	bUseMovementTypeOne ? PlayerMoveTypeOne() : PlayerMoveTypeTwo();
 }
 
 // Called to bind functionality to input
 void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerPawn::PlayerMoveTypeOne);
-	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerPawn::PlayerMoveTypeTwo);
 }
 
-void APlayerPawn::PlayerMoveTypeOne(float Value)
+void APlayerPawn::PlayerMoveTypeOne()
 {
-	AddMovementInput(GetActorForwardVector() * Value);
+	AddActorWorldOffset(ConsumeMovementInputVector());
+
+	AddMovementInput(GetActorForwardVector() * MovementSpeed * GetInputAxisValue("MoveForward") * GetWorld()->DeltaTimeSeconds);
+	AddMovementInput(GetActorRightVector() * MovementSpeed * GetInputAxisValue("MoveRight") * GetWorld()->DeltaTimeSeconds);
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Yellow, FString::Printf(TEXT("%f"),GetInputAxisValue("MoveForward")));
+	GEngine->AddOnScreenDebugMessage(-2, 0.01f, FColor::Yellow, FString::Printf(TEXT("%f"), GetInputAxisValue("MoveRight")));
+	
+	UE_LOG(LogTemp, Warning, TEXT("MoveTypeTwo"));
 }
 
-void APlayerPawn::PlayerMoveTypeTwo(float Value)
+void APlayerPawn::PlayerMoveTypeTwo()
 {
-	AddMovementInput(GetActorRightVector() * Value);
+	const float Forward = GetInputAxisValue("MoveForward") * MovementSpeed * GetWorld()->DeltaTimeSeconds;
+	const float Right = GetInputAxisValue("MoveRight") * MovementSpeed * GetWorld()->DeltaTimeSeconds;
+
+	AddActorWorldOffset(FVector(Forward, Right, 0));
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Yellow, FString::Printf(TEXT("%f"), GetInputAxisValue("MoveForward")));
+	GEngine->AddOnScreenDebugMessage(-2, 0.01f, FColor::Yellow, FString::Printf(TEXT("%f"), GetInputAxisValue("MoveRight")));
+
+	UE_LOG(LogTemp, Warning, TEXT("MoveTypeTwo"));
 }
